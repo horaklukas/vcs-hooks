@@ -1,0 +1,14 @@
+#!/bin/sh
+
+STATUS=0
+
+DEBUGGERFILES=$(git diff --staged -G"^\s*debugger" --name-only | wc -l)
+if [ $DEBUGGERFILES -gt 0 ]
+then
+  echo "You forgot to remove a debugger in the following files:"
+  git diff --staged --name-only -G"^\s*debugger"
+  echo ""
+  STATUS=1
+fi
+
+exit $STATUS
