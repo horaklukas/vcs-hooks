@@ -10,7 +10,7 @@ export class UnwrappedIngredientsStore {
     return this.setState(ingredients);
   }
 
-  //debugger
+  //PLACEHOLDER
 
   getIngredientById(id) {
     let ingredient =  this.getState().find(ingred => ingred.get('id') === id);

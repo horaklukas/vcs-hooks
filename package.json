@@ -1,0 +1,22 @@
+{
+  "name": "git-hooks",
+  "version": "1.0.0",
+  "description": "## Installation",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/horaklukas/git-hooks.git"
+  },
+  "author": "Lukas Horak <horaklukas@centrum.cz>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/horaklukas/git-hooks/issues"
+  },
+  "homepage": "https://github.com/horaklukas/git-hooks#readme",
+  "devDependencies": {
+    "chai": "^3.5.0"
+  }
+}
