@@ -2,6 +2,7 @@ var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
+var rimraf = require('rimraf');
 
 var hooksSrcPath = '.';
 
@@ -10,7 +11,7 @@ var execAndAssertError = function (command, successCallback) {
     assert.ifError(err);
     successCallback();
   });
-}
+};
 
 var copyFile = function (filePath, copyTo, callback, fileModificator) {
   fs.readFile(filePath, {encoding: 'utf8'}, function(err, data) {
@@ -43,7 +44,7 @@ module.exports = {
   },
 
   destroyTmpRepository: function(repoDir, callback) {
-    execAndAssertError('rm -rf ' + repoDir, callback);
+    rimraf(repoDir, callback)
   },
 
   copyHookIntoRepo: function(hookName, repoDir, callback) {
@@ -62,7 +63,7 @@ module.exports = {
     var repoPathArgs = '--git-dir=' + repoDir + '/.git --work-tree=' + repoDir;
 
     execAndAssertError('git ' + repoPathArgs + ' add .', function() {
-      exec("git " + repoPathArgs + " commit -m 'test Commit'", function(err) {
+      exec("git " + repoPathArgs + " commit -m \"test Commit\"", function(err) {
         callback(err);
       });
     });
@@ -71,4 +72,4 @@ module.exports = {
   getErrorMessage: function(forbiddenStatement) {
     return 'You forgot to remove a ' + forbiddenStatement + ' in the following files';
   }
-}
+};

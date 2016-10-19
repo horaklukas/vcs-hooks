@@ -3,12 +3,12 @@ var h = require('./helpers');
 
 describe('Pre commit hook', function () {
   function noopModificator (fixture) {
-    // no modifications needde
+    // no modifications needed
   }
 
   beforeEach(function (done) {
     var repoDir = h.generateRandomDirName();
-    this.repoDir = repoDir
+    this.repoDir = repoDir;
     h.createTmpRepository(repoDir, function() {
       h.copyHookIntoRepo('pre-commit', repoDir, function() {
         done();

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/horaklukas/git-hooks#readme",
   "devDependencies": {
-    "chai": "^3.5.0"
+    "chai": "^3.5.0",
+    "rimraf": "^2.5.4"
   }
 }
