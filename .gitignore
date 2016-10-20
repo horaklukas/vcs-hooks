@@ -1,1 +1,4 @@
 node_modules/
+npm-debug.log
+test/git_*
+test/hg_*
