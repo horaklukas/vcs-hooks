@@ -4,7 +4,7 @@ var path = require('path');
 var exec = require('child_process').exec;
 var rimraf = require('rimraf');
 
-var hooksSrcPath = '.';
+var hooksSrcPath = './src';
 
 var execAndAssertError = function (command, successCallback) {
   exec(command, function(err) {

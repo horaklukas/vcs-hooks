@@ -1,12 +1,12 @@
 var expect = require('chai').expect;
-var h = require('./helpers');
+var h = require('../helpers');
 
 describe('Pre commit hook', function () {
   function noopModificator (fixture) {
     // no modifications needed
   }
 
-  describe.skip('Git', function() {
+  describe('Git', function() {
     beforeEach(function (done) {
       var repoDir = h.generateRandomDirName('git');
       this.repoDir = repoDir;
@@ -113,7 +113,7 @@ describe('Pre commit hook', function () {
     });
   });
 
-  describe('Mercural', function () {
+  describe.only('Mercural', function () {
     beforeEach(function (done) {
       var repoDir = h.generateRandomDirName('hg');
       this.repoDir = repoDir;

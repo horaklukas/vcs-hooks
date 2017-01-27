@@ -15,7 +15,7 @@ fi
 
 
 if [[ -z $ERROR ]]; then
-  cp pre-commit $REPO_PATH/.git/hooks/pre-commit
+  cp src/pre-commit $REPO_PATH/.git/hooks/pre-commit
   echo ""
   echo "  Git hooks installed!"
   echo ""
