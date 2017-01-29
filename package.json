@@ -1,5 +1,5 @@
 {
-  "name": "git-hooks",
+  "name": "vcs-hooks",
   "version": "1.0.0",
   "description": "VCS hooks useful in javascript projects development",
   "main": "index.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/horaklukas/git-hooks.git"
+    "url": "git+https://github.com/horaklukas/vcs-hooks.git"
   },
   "author": "Lukas Horak <horaklukas@centrum.cz>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/horaklukas/git-hooks/issues"
+    "url": "https://github.com/horaklukas/vcs-hooks/issues"
   },
-  "homepage": "https://github.com/horaklukas/git-hooks#readme",
+  "homepage": "https://github.com/horaklukas/vcs-hooks#readme",
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
