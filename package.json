@@ -1,7 +1,7 @@
 {
   "name": "git-hooks",
   "version": "1.0.0",
-  "description": "## Installation",
+  "description": "VCS hooks useful in javascript projects development",
   "main": "index.js",
   "scripts": {
     "test": "mocha test/tests/**/*.js",
