@@ -2,43 +2,52 @@ var expect = require('chai').expect;
 var h = require('../helpers');
 
 describe('Pre commit hook', function () {
-  function noopModificator (fixture) {
+  function noopModificator(fixture) {
     // no modifications needed
   }
 
+  function addDebuggerModificator(fixture) {
+    return fixture.replace('//PLACEHOLDER', 'debugger');
+  }
+
+  function addCommentedDebuggerModificator(fixture) {
+    return fixture.replace('//PLACEHOLDER', '//debugger');
+  };
+
+  function addFdescribeModificator(fixture) {
+    return fixture.replace("describe('#constructor'", "fdescribe('#constructor'");
+  };
+
+  function addFitModificator(fixture) {
+    return fixture.replace("it('should create ID", "fit('should create ID");
+  };
+
   describe('Git', function() {
+    var gitRepoDir;
+
     beforeEach(function (done) {
-      var repoDir = h.generateRandomDirName('git');
-      this.repoDir = repoDir;
-      h.git.createTmpRepository(repoDir, function() {
-        h.git.copyHookIntoRepo('pre-commit', repoDir, function() {
+      gitRepoDir = h.generateRandomDirName('git');
+
+      h.git.createTmpRepository(gitRepoDir, function() {
+        h.git.copyHookIntoRepo('pre-commit', gitRepoDir, function() {
           done();
         })
       });
     });
 
     it('should reject commit file containing fdescribe', function (done) {
-      var repoDir = this.repoDir,
-          modificator;
-
-      modificator = function(fixture) {
-        return fixture.replace("describe('#constructor'", "fdescribe('#constructor'");
-      };
-
-      h.copyFixtureIntoRepo('fixture2.js', modificator, repoDir, function() {
-        h.git.commitAllInRepo(repoDir, function(commitError) {
+      h.copyFixtureIntoRepo('fixture2.js', addFdescribeModificator, gitRepoDir, function() {
+        h.git.commitAllInRepo(gitRepoDir, function(commitError) {
           expect(commitError).to.be.instanceof(Error)
               .and.have.property('message').that.contain(h.getErrorMessage('fdescribe'));
           done();
         })
       });
-    });
+    });;
 
     it('should not reject commit when there is no fdescribe', function (done) {
-      var repoDir = this.repoDir;
-
-      h.copyFixtureIntoRepo('fixture2.js', noopModificator, repoDir, function() {
-        h.git.commitAllInRepo(repoDir, function(commitError) {
+      h.copyFixtureIntoRepo('fixture2.js', noopModificator, gitRepoDir, function() {
+        h.git.commitAllInRepo(gitRepoDir, function(commitError) {
           expect(commitError).to.be.null;
           done();
         })
@@ -46,15 +55,8 @@ describe('Pre commit hook', function () {
     });
 
     it('should reject commit file containing fit', function (done) {
-      var repoDir = this.repoDir,
-          modificator;
-
-      modificator = function(fixture) {
-        return fixture.replace("it('should create ID", "fit('should create ID");
-      };
-
-      h.copyFixtureIntoRepo('fixture2.js', modificator, repoDir, function() {
-        h.git.commitAllInRepo(repoDir, function(commitError) {
+      h.copyFixtureIntoRepo('fixture2.js', addFitModificator, gitRepoDir, function() {
+        h.git.commitAllInRepo(gitRepoDir, function(commitError) {
           expect(commitError).to.be.instanceof(Error)
               .and.have.property('message').that.contain(h.getErrorMessage('fit'));
           done();
@@ -63,10 +65,8 @@ describe('Pre commit hook', function () {
     });
 
     it('should not reject commit when fit is commented out', function (done) {
-      var repoDir = this.repoDir;
-
-      h.copyFixtureIntoRepo('fixture2.js', noopModificator, repoDir, function() {
-        h.git.commitAllInRepo(repoDir, function(commitError) {
+      h.copyFixtureIntoRepo('fixture2.js', noopModificator, gitRepoDir, function() {
+        h.git.commitAllInRepo(gitRepoDir, function(commitError) {
           expect(commitError).to.be.null;
           done();
         })
@@ -74,15 +74,8 @@ describe('Pre commit hook', function () {
     });
 
     it('should reject commit file containing debugger', function (done) {
-      var repoDir = this.repoDir,
-          modificator;
-
-      modificator = function(fixture) {
-        return fixture.replace('//PLACEHOLDER', 'debugger');
-      };
-
-      h.copyFixtureIntoRepo('fixture1.js', modificator, repoDir, function() {
-        h.git.commitAllInRepo(repoDir, function(commitError) {
+      h.copyFixtureIntoRepo('fixture1.js', addDebuggerModificator, gitRepoDir, function() {
+        h.git.commitAllInRepo(gitRepoDir, function(commitError) {
           expect(commitError).to.be.instanceof(Error)
               .and.have.property('message').that.contain(h.getErrorMessage('debugger'));
           done();
@@ -91,15 +84,8 @@ describe('Pre commit hook', function () {
     });
 
     it('should not reject commit when debugger is commented out', function (done) {
-      var repoDir = this.repoDir,
-          modificator;
-
-      modificator = function(fixture) {
-        return fixture.replace('//PLACEHOLDER', '//debugger');
-      };
-
-      h.copyFixtureIntoRepo('fixture1.js', modificator, repoDir, function() {
-        h.git.commitAllInRepo(repoDir, function(commitError) {
+      h.copyFixtureIntoRepo('fixture1.js', addCommentedDebuggerModificator, gitRepoDir, function() {
+        h.git.commitAllInRepo(gitRepoDir, function(commitError) {
           expect(commitError).to.be.null;
           done();
         });
@@ -107,37 +93,28 @@ describe('Pre commit hook', function () {
     });
 
     afterEach(function (done) {
-      h.destroyTmpRepository(this.repoDir, function() {
+      h.destroyTmpRepository(gitRepoDir, function() {
         done();
       });
     });
   });
 
-  describe.only('Mercural', function () {
+  describe('Mercural', function () {
+    var hgRepoDir;
+
     beforeEach(function (done) {
-      var repoDir = h.generateRandomDirName('hg');
-      this.repoDir = repoDir;
-      h.hg.createTmpRepository(repoDir, function() {
-        h.hg.copyHookIntoRepo('pre-commit', repoDir, 'precommit', function() {
+      hgRepoDir = h.generateRandomDirName('hg');
+
+      h.hg.createTmpRepository(hgRepoDir, function() {
+        h.hg.copyHookIntoRepo('pre-commit', hgRepoDir, 'precommit', function() {
           done();
         })
       });
     });
 
-    it.skip('test basic setting', function () {
-      expect(true).to.be.true;
-    });
-
     it('should reject commit file containing fdescribe', function (done) {
-      var repoDir = this.repoDir,
-          modificator;
-
-      modificator = function(fixture) {
-        return fixture.replace("describe('#constructor'", "fdescribe('#constructor'");
-      };
-
-      h.copyFixtureIntoRepo('fixture2.js', modificator, repoDir, function() {
-        h.hg.commitAllInRepo(repoDir, function(commitError) {
+      h.copyFixtureIntoRepo('fixture2.js', addFdescribeModificator, hgRepoDir, function() {
+        h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
           expect(commitError).to.be.instanceof(Error)
               .and.have.property('message').that.contain(h.getErrorMessage('fdescribe'));
           done();
@@ -145,12 +122,57 @@ describe('Pre commit hook', function () {
       });
     });
 
+     it('should not reject commit when there is no fdescribe', function (done) {
+      h.copyFixtureIntoRepo('fixture2.js', noopModificator, hgRepoDir, function() {
+        h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
+          expect(commitError).to.be.null;
+          done();
+        })
+      });
+    });
 
-    /*afterEach(function (done) {
-      h.destroyTmpRepository(this.repoDir, function() {
+    it('should reject commit file containing fit', function (done) {
+      h.copyFixtureIntoRepo('fixture2.js', addFitModificator, hgRepoDir, function() {
+        h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
+          expect(commitError).to.be.instanceof(Error)
+              .and.have.property('message').that.contain(h.getErrorMessage('fit'));
+          done();
+        })
+      });
+    });
+
+    it('should not reject commit when fit is commented out', function (done) {
+      h.copyFixtureIntoRepo('fixture2.js', noopModificator, hgRepoDir, function() {
+        h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
+          expect(commitError).to.be.null;
+          done();
+        })
+      });
+    });
+
+    it('should reject commit file containing debugger', function (done) {
+      h.copyFixtureIntoRepo('fixture1.js', addDebuggerModificator, hgRepoDir, function() {
+        h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
+          expect(commitError).to.be.instanceof(Error)
+              .and.have.property('message').that.contain(h.getErrorMessage('debugger'));
+          done();
+        })
+      });
+    });
+
+    it('should not reject commit when debugger is commented out', function (done) {
+      h.copyFixtureIntoRepo('fixture1.js', addCommentedDebuggerModificator, hgRepoDir, function() {
+        h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
+          expect(commitError).to.be.null;
+          done();
+        });
+      });
+    });
+
+    afterEach(function (done) {
+      h.destroyTmpRepository(hgRepoDir, function() {
         done();
       });
-    });*/
+    });
   });
-
 });

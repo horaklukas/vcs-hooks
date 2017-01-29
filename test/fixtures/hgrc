@@ -1,2 +1,5 @@
 [hooks]
-precommit = pre-commit
+precommit = ./.hg/pre-commit
+
+[ui]
+username = Your Name <your@mail>

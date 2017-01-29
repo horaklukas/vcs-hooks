@@ -86,7 +86,7 @@ var HgHelpers = {
   },
 
   copyHookIntoRepo: function(hookName, repoDir, type, callback) {
-    var hooksDestPath = repoDir,// + '/.hg',
+    var hooksDestPath = repoDir + '/.hg',
         hgrc =
           "[hooks]\r\n" +
           "" + type + " = " + hookName + "\r\n";
@@ -95,12 +95,7 @@ var HgHelpers = {
       copyFile('./test/fixtures/hgrc', repoDir + '/.hg', function() {
         // set up hook executing
         fs.chmod(hooksDestPath + '/' + hookName, 0777, callback);
-      });
-      /*fs.writeFile(repoDir + '/.hg/hgrc', hgrc, function(err) {
-        assert.ifError(err);
-       // set up hook executing
-        fs.chmod(hooksDestPath + '/' + hookName, 0777, callback);
-      });*/
+      });;
     });
   },
 

@@ -4,7 +4,8 @@
   "description": "## Installation",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/tests/**/*.js"
+    "test": "mocha test/tests/**/*.js",
+    "test:watch": "mocha --watch test/tests/**/*.js"
   },
   "repository": {
     "type": "git",

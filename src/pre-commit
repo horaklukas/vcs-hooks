@@ -1,38 +1,89 @@
-#!/bin/sh
-#
-# This pre-commit hook looks for `fdescribe`, `fit`, debugger in the
-# staged files and exits with an error code of 1 if there are such changes.
-#
-# copied from https://gist.github.com/DerLobi/d938ac7dc422145f85e6
+#!/usr/bin/env node
 
-STATUS=0
+/*
+ This pre-commit hook looks for `fdescribe`, `fit`, debugger in the
+ staged files and exits with an error code of 1 if there are such changes.
 
-DESCRIBEFILES=$(git diff --staged -G"^\s*fdescribe\(" --name-only | wc -l)
-if [ $DESCRIBEFILES -gt 0 ]
-then
-  echo "You forgot to remove a fdescribe in the following files:"
-  git diff --staged --name-only -G"^\s*fdescribe\("
-  echo ""
-  STATUS=1
-fi
+ inspired by https://gist.github.com/DerLobi/d938ac7dc422145f85e6
+*/
 
+var fs = require('fs');
+var child_process = require('child_process');
+var execSync = child_process.execSync;
+var path = require('path');
 
-ITFILES=$(git diff --staged -G"^\s*fit\(" --name-only | wc -l)
-if [ $ITFILES -gt 0 ]
-then
-  echo "You forgot to remove a fit in the following files:"
-	git diff --staged --name-only -G"^\s*fit\("
-  echo ""
-  STATUS=1
-fi
+// looks like "+++ b/filename.js"
+var changedFilenameRegexp = /\s\+\+\+\s(.*)\s/;
 
-DEBUGGERFILES=$(git diff --staged -G"^\s*debugger" --name-only | wc -l)
-if [ $DEBUGGERFILES -gt 0 ]
-then
-  echo "You forgot to remove a debugger in the following files:"
-  git diff --staged --name-only -G"^\s*debugger"
-  echo ""
-  STATUS=1
-fi
+var patterns = {
+  fdescribe: /\s\+\s*fdescribe\(/,
+  fit: /\s\+\s*fit\(/,
+  debugger: /\s\+\s*debugger/
+};
+var tests = Object.keys(patterns);
 
-exit $STATUS
+var diffCommandByVcsType = {
+  'git': 'git diff --staged',
+  'hg': 'hg diff --git'
+}
+
+function getFilesContaining(pattern) {
+  var files,
+    filesDiff;
+
+  filesDiff = getFilesDiff();
+
+  if(filesDiff && pattern.test(filesDiff)) {
+    var neco = filesDiff.split(pattern);
+
+    files = neco.map(extractChangeFileName).filter(isNotNull);
+  }
+
+  return files || [];
+}
+
+function getVcsType() {
+  // TODO: better way to determine type of repository
+  if(__dirname.indexOf('.git') > -1) {
+    return 'git';
+  } else if (__dirname.indexOf('.hg')) {
+    return 'hg'
+  }
+
+  return null;
+}
+
+function getFilesDiff() {
+  var diffCmd,
+    vcsType;
+
+  vcsType = getVcsType();
+  diffCmd = vcsType && diffCommandByVcsType[vcsType];
+
+  return diffCmd ? execSync(diffCmd).toString() : '';
+}
+
+function extractChangeFileName(fileRow) {
+  var filename = changedFilenameRegexp.exec(fileRow);
+
+  return filename && filename[1] ? path.basename(filename[1]) : null;
+}
+
+function isNotNull(item) {
+  return item != null;
+}
+
+tests.forEach(function(testName) {
+  var files;
+
+  files = getFilesContaining(patterns[testName]);
+
+  if (files.length) {
+    console.error('You forgot to remove a ' + testName + ' in the following files:');
+    console.error(files.join('\n'));
+    console.error('');
+    process.exit(1);
+  }
+});
+
+process.exit(0);
