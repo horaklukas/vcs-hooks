@@ -5,6 +5,7 @@ var exec = require('child_process').exec;
 var rimraf = require('rimraf');
 
 var hooksSrcPath = './src';
+var isWin = /^win/.test(process.platform);
 
 var execAndAssertError = function (command, successCallback) {
   exec(command, function(err) {
@@ -76,6 +77,12 @@ var GitHelpers = {
   }
 };
 
+function fixPathsForWinModificator(content) {
+  return content
+      .replace(/ \.\//g, " ") // remove ./ for relative paths
+      .replace('/', '\\'); // convert forward slashes to back slashes
+}
+
 // Mercurial specific utilities
 var HgHelpers = {
   createTmpRepository: function(repoDir, callback) {
@@ -87,15 +94,27 @@ var HgHelpers = {
 
   copyHookIntoRepo: function(hookName, repoDir, type, callback) {
     var hooksDestPath = repoDir + '/.hg',
+        setUpHookPermissions,
+        hookPath,
         hgrc =
           "[hooks]\r\n" +
           "" + type + " = " + hookName + "\r\n";
 
-    copyFile(hooksSrcPath + '/' + hookName, hooksDestPath, function() {
+    setUpHookPermissions = function() {
+      fs.chmod(hooksDestPath + '/' + hookName, 0777, callback);
+    };
+    hookPath = path.join(hooksSrcPath, hookName);
+
+    copyFile(hookPath, hooksDestPath, function() {
       copyFile('./test/fixtures/hgrc', repoDir + '/.hg', function() {
-        // set up hook executing
-        fs.chmod(hooksDestPath + '/' + hookName, 0777, callback);
-      });;
+        if (isWin) {
+          copyFile(hookPath + '.bat', hooksDestPath, function() {
+            setUpHookPermissions();
+          });
+        } else {
+          setUpHookPermissions();
+        }
+      }, isWin && fixPathsForWinModificator);
     });
   },
 

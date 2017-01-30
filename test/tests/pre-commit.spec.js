@@ -12,15 +12,15 @@ describe('Pre commit hook', function () {
 
   function addCommentedDebuggerModificator(fixture) {
     return fixture.replace('//PLACEHOLDER', '//debugger');
-  };
+  }
 
   function addFdescribeModificator(fixture) {
     return fixture.replace("describe('#constructor'", "fdescribe('#constructor'");
-  };
+  }
 
   function addFitModificator(fixture) {
     return fixture.replace("it('should create ID", "fit('should create ID");
-  };
+  }
 
   describe('Git', function() {
     var gitRepoDir;
@@ -43,7 +43,7 @@ describe('Pre commit hook', function () {
           done();
         })
       });
-    });;
+    });
 
     it('should not reject commit when there is no fdescribe', function (done) {
       h.copyFixtureIntoRepo('fixture2.js', noopModificator, gitRepoDir, function() {
