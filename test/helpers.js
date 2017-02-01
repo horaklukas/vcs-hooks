@@ -38,7 +38,7 @@ function generateRandomDirName (vcsName) {
 }
 
 function destroyTmpRepository (repoDir, callback) {
-  rimraf(repoDir, callback)
+  rimraf(repoDir, callback);
 }
 
 function getErrorMessage (forbiddenStatement) {
@@ -95,10 +95,7 @@ var HgHelpers = {
   copyHookIntoRepo: function(hookName, repoDir, type, callback) {
     var hooksDestPath = repoDir + '/.hg',
         setUpHookPermissions,
-        hookPath,
-        hgrc =
-          "[hooks]\r\n" +
-          "" + type + " = " + hookName + "\r\n";
+        hookPath;
 
     setUpHookPermissions = function() {
       fs.chmod(hooksDestPath + '/' + hookName, 0777, callback);
