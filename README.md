@@ -1,5 +1,7 @@
 # VCS Hooks
 
+[![Build Status](https://travis-ci.org/horaklukas/vcs-hooks.svg?branch=master)](https://travis-ci.org/horaklukas/vcs-hooks)
+
 Version control system hooks that can help you when developing javascript project.
 
 ## Hooks

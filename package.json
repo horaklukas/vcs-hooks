@@ -1,6 +1,6 @@
 {
   "name": "vcs-hooks",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "VCS hooks useful in javascript projects development",
   "scripts": {
     "test": "mocha test/tests/**/*.js",
