@@ -4,5 +4,4 @@ node_js:
 before_script:
   - git config --global user.name "My fake name"
   - git config --global user.email "myfake@email.cz"
-  - hg --version
 sudo: false
