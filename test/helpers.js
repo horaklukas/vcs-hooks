@@ -116,7 +116,7 @@ var HgHelpers = {
   },
 
   commitAllInRepo: function(repoDir, callback) {
-    var args = "--cwd=" + repoDir + " --addremove -m \"test Commit\"";
+    var args = "--cwd " + repoDir + " --addremove -m \"test Commit\"";
 
     exec("hg commit " + args + " .", function(err) {
       callback(err);
