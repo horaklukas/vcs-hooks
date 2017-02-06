@@ -15,6 +15,8 @@ var path = require('path');
 // looks like "+++ b/filename.js"
 var changedFilenameRegexp = /\s\+\+\+\s(.*)\s/;
 
+var diffFilesSeparator = /\sdiff \-\-git (.*)\s/
+
 var patterns = {
   fdescribe: /\s\+\s*fdescribe\(/,
   fit: /\s\+\s*fit\(/,
@@ -33,13 +35,26 @@ function getFilesContaining(pattern) {
 
   filesDiff = getFilesDiff();
 
-  if(filesDiff && pattern.test(filesDiff)) {
-    var neco = filesDiff.split(pattern);
+  if(filesDiff && containPattern(pattern, filesDiff)) {
+    var parts = filesDiff.split(diffFilesSeparator);
 
-    files = neco.map(extractChangeFileName).filter(isNotNull);
+    files = parts
+      .filter(containPattern.bind(null, pattern))
+      .map(extractChangeFileName)
+      .filter(isNotNull);
   }
 
   return files || [];
+}
+
+function getFilesDiff() {
+  var diffCmd,
+    vcsType;
+
+  vcsType = getVcsType();
+  diffCmd = vcsType && diffCommandByVcsType[vcsType];
+
+  return diffCmd ? execSync(diffCmd).toString() : '';
 }
 
 function getVcsType() {
@@ -53,14 +68,8 @@ function getVcsType() {
   return null;
 }
 
-function getFilesDiff() {
-  var diffCmd,
-    vcsType;
-
-  vcsType = getVcsType();
-  diffCmd = vcsType && diffCommandByVcsType[vcsType];
-
-  return diffCmd ? execSync(diffCmd).toString() : '';
+function containPattern(pattern, content) {
+  return pattern.test(content);
 }
 
 function extractChangeFileName(fileRow) {

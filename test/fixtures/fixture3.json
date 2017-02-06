@@ -1,0 +1,19 @@
+{
+  "name": "vcs-hooks",
+  "version": "1.1.1",
+  "description": "VCS hooks useful in javascript projects development",
+  "scripts": {
+    "test": "mocha test/tests/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/horaklukas/vcs-hooks.git"
+  },
+  "author": "Lukas Horak <horaklukas@centrum.cz>",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "rimraf": "^2.5.4"
+  }
+}

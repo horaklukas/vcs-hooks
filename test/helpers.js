@@ -41,8 +41,14 @@ function destroyTmpRepository (repoDir, callback) {
   rimraf(repoDir, callback);
 }
 
-function getErrorMessage (forbiddenStatement) {
-  return 'You forgot to remove a ' + forbiddenStatement + ' in the following files';
+function getErrorMessage (forbiddenStatement, files) {
+  var message = 'You forgot to remove a ' + forbiddenStatement + ' in the following files';
+
+  if (files && Array.isArray(files)) {
+    message += ':\n' + files.join('\n');
+  }
+
+  return message;
 }
 
 function copyFixtureIntoRepo (fixtureName, modificator, repoDir, callback) {

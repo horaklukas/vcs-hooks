@@ -2,10 +2,6 @@ var expect = require('chai').expect;
 var h = require('../helpers');
 
 describe('Pre commit hook', function () {
-  function noopModificator(fixture) {
-    // no modifications needed
-  }
-
   function addDebuggerModificator(fixture) {
     return fixture.replace('//PLACEHOLDER', 'debugger');
   }
@@ -20,6 +16,10 @@ describe('Pre commit hook', function () {
 
   function addFitModificator(fixture) {
     return fixture.replace("it('should create ID", "fit('should create ID");
+  }
+
+  function assertCommitErrorContainsMessage(commitError, message) {
+     expect(commitError).to.be.instanceof(Error).and.have.property('message').that.contain(message);
   }
 
   describe('Git', function() {
@@ -38,15 +38,14 @@ describe('Pre commit hook', function () {
     it('should reject commit file containing fdescribe', function (done) {
       h.copyFixtureIntoRepo('fixture2.js', addFdescribeModificator, gitRepoDir, function() {
         h.git.commitAllInRepo(gitRepoDir, function(commitError) {
-          expect(commitError).to.be.instanceof(Error)
-              .and.have.property('message').that.contain(h.getErrorMessage('fdescribe'));
+          assertCommitErrorContainsMessage(commitError, h.getErrorMessage('fdescribe'));
           done();
         })
       });
     });
 
     it('should not reject commit when there is no fdescribe', function (done) {
-      h.copyFixtureIntoRepo('fixture2.js', noopModificator, gitRepoDir, function() {
+      h.copyFixtureIntoRepo('fixture2.js', null, gitRepoDir, function() {
         h.git.commitAllInRepo(gitRepoDir, function(commitError) {
           expect(commitError).to.be.null;
           done();
@@ -57,15 +56,14 @@ describe('Pre commit hook', function () {
     it('should reject commit file containing fit', function (done) {
       h.copyFixtureIntoRepo('fixture2.js', addFitModificator, gitRepoDir, function() {
         h.git.commitAllInRepo(gitRepoDir, function(commitError) {
-          expect(commitError).to.be.instanceof(Error)
-              .and.have.property('message').that.contain(h.getErrorMessage('fit'));
+          assertCommitErrorContainsMessage(commitError, h.getErrorMessage('fit'));
           done();
         })
       });
     });
 
     it('should not reject commit when fit is commented out', function (done) {
-      h.copyFixtureIntoRepo('fixture2.js', noopModificator, gitRepoDir, function() {
+      h.copyFixtureIntoRepo('fixture2.js', null, gitRepoDir, function() {
         h.git.commitAllInRepo(gitRepoDir, function(commitError) {
           expect(commitError).to.be.null;
           done();
@@ -76,8 +74,7 @@ describe('Pre commit hook', function () {
     it('should reject commit file containing debugger', function (done) {
       h.copyFixtureIntoRepo('fixture1.js', addDebuggerModificator, gitRepoDir, function() {
         h.git.commitAllInRepo(gitRepoDir, function(commitError) {
-          expect(commitError).to.be.instanceof(Error)
-              .and.have.property('message').that.contain(h.getErrorMessage('debugger'));
+          assertCommitErrorContainsMessage(commitError, h.getErrorMessage('debugger'));
           done();
         })
       });
@@ -89,6 +86,21 @@ describe('Pre commit hook', function () {
           expect(commitError).to.be.null;
           done();
         });
+      });
+    });
+
+    it('should print just the one dirty file in error when commiting more files', function (done) {
+      var errorMessage = h.getErrorMessage('fit', ['fixture2.js']);
+
+      h.copyFixtureIntoRepo('fixture1.js', null, gitRepoDir, function() {
+      h.copyFixtureIntoRepo('fixture2.js', addFitModificator, gitRepoDir, function() {
+      h.copyFixtureIntoRepo('fixture3.json', null, gitRepoDir, function() {
+        h.git.commitAllInRepo(gitRepoDir, function(commitError) {
+          assertCommitErrorContainsMessage(commitError, errorMessage);
+          done();
+        });
+      });
+      });
       });
     });
 
@@ -115,15 +127,14 @@ describe('Pre commit hook', function () {
     it('should reject commit file containing fdescribe', function (done) {
       h.copyFixtureIntoRepo('fixture2.js', addFdescribeModificator, hgRepoDir, function() {
         h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
-          expect(commitError).to.be.instanceof(Error)
-              .and.have.property('message').that.contain(h.getErrorMessage('fdescribe'));
+          assertCommitErrorContainsMessage(commitError, h.getErrorMessage('fdescribe'));
           done();
         })
       });
     });
 
-     it('should not reject commit when there is no fdescribe', function (done) {
-      h.copyFixtureIntoRepo('fixture2.js', noopModificator, hgRepoDir, function() {
+    it('should not reject commit when there is no fdescribe', function (done) {
+      h.copyFixtureIntoRepo('fixture2.js', null, hgRepoDir, function() {
         h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
           expect(commitError).to.be.null;
           done();
@@ -134,15 +145,14 @@ describe('Pre commit hook', function () {
     it('should reject commit file containing fit', function (done) {
       h.copyFixtureIntoRepo('fixture2.js', addFitModificator, hgRepoDir, function() {
         h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
-          expect(commitError).to.be.instanceof(Error)
-              .and.have.property('message').that.contain(h.getErrorMessage('fit'));
+          assertCommitErrorContainsMessage(commitError, h.getErrorMessage('fit'));
           done();
         })
       });
     });
 
     it('should not reject commit when fit is commented out', function (done) {
-      h.copyFixtureIntoRepo('fixture2.js', noopModificator, hgRepoDir, function() {
+      h.copyFixtureIntoRepo('fixture2.js', null, hgRepoDir, function() {
         h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
           expect(commitError).to.be.null;
           done();
@@ -153,8 +163,7 @@ describe('Pre commit hook', function () {
     it('should reject commit file containing debugger', function (done) {
       h.copyFixtureIntoRepo('fixture1.js', addDebuggerModificator, hgRepoDir, function() {
         h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
-          expect(commitError).to.be.instanceof(Error)
-              .and.have.property('message').that.contain(h.getErrorMessage('debugger'));
+          assertCommitErrorContainsMessage(commitError, h.getErrorMessage('debugger'));
           done();
         })
       });
@@ -166,6 +175,21 @@ describe('Pre commit hook', function () {
           expect(commitError).to.be.null;
           done();
         });
+      });
+    });
+
+    it('should print just the one dirty file in error when commiting more files', function (done) {
+      var errorMessage = h.getErrorMessage('fit', ['fixture2.js']);
+
+      h.copyFixtureIntoRepo('fixture1.js', null, hgRepoDir, function() {
+      h.copyFixtureIntoRepo('fixture2.js', addFitModificator, hgRepoDir, function() {
+      h.copyFixtureIntoRepo('fixture3.json', null, hgRepoDir, function() {
+        h.hg.commitAllInRepo(hgRepoDir, function(commitError) {
+          assertCommitErrorContainsMessage(commitError, errorMessage);
+          done();
+        });
+      });
+      });
       });
     });
 
