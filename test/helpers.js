@@ -1,5 +1,6 @@
 var assert = require('assert');
 var fs = require('fs');
+var ncp = require('ncp');
 var path = require('path');
 var exec = require('child_process').exec;
 var rimraf = require('rimraf');
@@ -7,14 +8,14 @@ var rimraf = require('rimraf');
 var hooksSrcPath = './src';
 var isWin = /^win/.test(process.platform);
 
-var execAndAssertError = function(command, successCallback) {
+function execAndAssertError(command, successCallback) {
   exec(command, function(err) {
     assert.ifError(err);
     successCallback();
   });
-};
+}
 
-var copyFile = function(filePath, copyTo, callback, fileModificator) {
+function copyFile(filePath, copyTo, callback, fileModificator) {
   fs.readFile(filePath, {encoding: 'utf8'}, function(err, data) {
     assert.ifError(err);
 
@@ -28,7 +29,15 @@ var copyFile = function(filePath, copyTo, callback, fileModificator) {
       callback();
     });
   });
-};
+}
+
+function copyDir(directory, copyTo, callback) {
+  ncp(directory, path.join(copyTo, path.basename(directory)), function(err) {
+    assert.ifError(err);
+
+    callback();
+  });
+}
 
 // General utilities
 function generateRandomDirName(vcsName) {
@@ -53,6 +62,10 @@ function getErrorMessage(forbiddenStatement, files) {
 
 function copyFixtureIntoRepo(fixtureName, modificator, repoDir, callback) {
   copyFile('./test/fixtures/' + fixtureName, repoDir, callback, modificator);
+}
+
+function copyDirFixtureIntoRepo(dirFixtureName, repoDir, callback) {
+  copyDir('./test/fixtures/' + dirFixtureName, repoDir, callback);
 }
 
 // Git specific utilities
@@ -136,5 +149,6 @@ module.exports = {
   generateRandomDirName: generateRandomDirName,
   destroyTmpRepository: destroyTmpRepository,
   copyFixtureIntoRepo: copyFixtureIntoRepo,
+  copyDirFixtureIntoRepo: copyDirFixtureIntoRepo,
   getErrorMessage: getErrorMessage
 };

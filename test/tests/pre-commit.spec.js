@@ -108,6 +108,17 @@ describe('Pre commit hook', function() {
       });
     });
 
+    it('should reject commit in hirearchy structure', function(done) {
+      var errorMessage = h.getErrorMessage('debugger', ['fixture-dir3.js']);
+
+       h.copyDirFixtureIntoRepo('dir1', gitRepoDir, function() {
+        h.git.commitAllInRepo(gitRepoDir, function(commitError) {
+          assertCommitErrorContainsMessage(commitError, errorMessage);
+          done();
+        });
+      });
+    });
+
     afterEach(function(done) {
       h.destroyTmpRepository(gitRepoDir, function() {
         done();
@@ -199,7 +210,7 @@ describe('Pre commit hook', function() {
 
     afterEach(function(done) {
       h.destroyTmpRepository(hgRepoDir, function() {
-        done();
+        done();;
       });
     });
   });
