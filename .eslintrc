@@ -4,7 +4,9 @@
         "node": true,
         "mocha": true
     },
-    "plugins": [
-        "import"
-    ]
+    "rules": {
+      "quotes": [2, "single"],
+      "semi": 2,
+      "space-before-function-paren": [2, "never"]
+    }
 }

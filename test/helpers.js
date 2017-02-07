@@ -7,14 +7,14 @@ var rimraf = require('rimraf');
 var hooksSrcPath = './src';
 var isWin = /^win/.test(process.platform);
 
-var execAndAssertError = function (command, successCallback) {
+var execAndAssertError = function(command, successCallback) {
   exec(command, function(err) {
     assert.ifError(err);
     successCallback();
   });
 };
 
-var copyFile = function (filePath, copyTo, callback, fileModificator) {
+var copyFile = function(filePath, copyTo, callback, fileModificator) {
   fs.readFile(filePath, {encoding: 'utf8'}, function(err, data) {
     assert.ifError(err);
 
@@ -26,22 +26,22 @@ var copyFile = function (filePath, copyTo, callback, fileModificator) {
       assert.ifError(err);
 
       callback();
-    })
+    });
   });
 };
 
 // General utilities
-function generateRandomDirName (vcsName) {
+function generateRandomDirName(vcsName) {
   var dir = vcsName + '_test' + new Date().getTime().toString() + Math.round((Math.random() * 300)).toString();
 
   return './test/' + dir;
 }
 
-function destroyTmpRepository (repoDir, callback) {
+function destroyTmpRepository(repoDir, callback) {
   rimraf(repoDir, callback);
 }
 
-function getErrorMessage (forbiddenStatement, files) {
+function getErrorMessage(forbiddenStatement, files) {
   var message = 'You forgot to remove a ' + forbiddenStatement + ' in the following files';
 
   if (files && Array.isArray(files)) {
@@ -51,7 +51,7 @@ function getErrorMessage (forbiddenStatement, files) {
   return message;
 }
 
-function copyFixtureIntoRepo (fixtureName, modificator, repoDir, callback) {
+function copyFixtureIntoRepo(fixtureName, modificator, repoDir, callback) {
   copyFile('./test/fixtures/' + fixtureName, repoDir, callback, modificator);
 }
 
@@ -59,7 +59,7 @@ function copyFixtureIntoRepo (fixtureName, modificator, repoDir, callback) {
 var GitHelpers = {
   createTmpRepository: function(repoDir, callback) {
      // Create directory
-    fs.mkdir(repoDir, 511, function () {
+    fs.mkdir(repoDir, 511, function() {
 	execAndAssertError('git --git-dir=' + repoDir + '/.git init', callback);
 });
   },
@@ -76,7 +76,7 @@ var GitHelpers = {
     var repoPathArgs = '--git-dir=' + repoDir + '/.git --work-tree=' + repoDir;
 
     execAndAssertError('git ' + repoPathArgs + ' add .', function() {
-      exec("git " + repoPathArgs + " commit -m \"test Commit\"", function(err) {
+      exec('git ' + repoPathArgs + ' commit -m "test Commit"', function(err) {
         callback(err);
       });
     });
@@ -85,7 +85,7 @@ var GitHelpers = {
 
 function fixPathsForWinModificator(content) {
   return content
-      .replace(/ \.\//g, " ") // remove ./ for relative paths
+      .replace(/ \.\//g, ' ') // remove ./ for relative paths
       .replace('/', '\\'); // convert forward slashes to back slashes
 }
 
@@ -93,7 +93,7 @@ function fixPathsForWinModificator(content) {
 var HgHelpers = {
   createTmpRepository: function(repoDir, callback) {
     // Create directory
-    fs.mkdir(repoDir, 511, function () {
+    fs.mkdir(repoDir, 511, function() {
 	execAndAssertError('hg init ' + repoDir, callback);
 });
   },
@@ -122,9 +122,9 @@ var HgHelpers = {
   },
 
   commitAllInRepo: function(repoDir, callback) {
-    var args = "--cwd " + repoDir + " --addremove -m \"test Commit\"";
+    var args = '--cwd ' + repoDir + ' --addremove -m "test Commit"';
 
-    exec("hg commit " + args + " .", function(err) {
+    exec('hg commit ' + args + ' .', function(err) {
       callback(err);
     });
   }

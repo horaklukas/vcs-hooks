@@ -61,7 +61,7 @@ function getVcsType() {
   if(__dirname.indexOf('.git') > -1) {
     return 'git';
   } else if (__dirname.indexOf('.hg')) {
-    return 'hg'
+    return 'hg';
   }
 
   return null;
