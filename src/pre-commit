@@ -7,13 +7,14 @@
  inspired by https://gist.github.com/DerLobi/d938ac7dc422145f85e6
 */
 
-var fs = require('fs');
 var child_process = require('child_process');
 var execSync = child_process.execSync;
 var path = require('path');
 
 // looks like "+++ b/filename.js"
 var changedFilenameRegexp = /\s\+\+\+\s(.*)\s/;
+
+var diffFilesSeparator = /\sdiff --git (.*)\s/;
 
 var patterns = {
   fdescribe: /\s\+\s*fdescribe\(/,
@@ -25,7 +26,7 @@ var tests = Object.keys(patterns);
 var diffCommandByVcsType = {
   'git': 'git diff --staged',
   'hg': 'hg diff --git'
-}
+};
 
 function getFilesContaining(pattern) {
   var files,
@@ -33,24 +34,16 @@ function getFilesContaining(pattern) {
 
   filesDiff = getFilesDiff();
 
-  if(filesDiff && pattern.test(filesDiff)) {
-    var neco = filesDiff.split(pattern);
+  if(filesDiff && containPattern(pattern, filesDiff)) {
+    var parts = filesDiff.split(diffFilesSeparator);
 
-    files = neco.map(extractChangeFileName).filter(isNotNull);
+    files = parts
+      .filter(containPattern.bind(null, pattern))
+      .map(extractChangeFileName)
+      .filter(isNotNull);
   }
 
   return files || [];
-}
-
-function getVcsType() {
-  // TODO: better way to determine type of repository
-  if(__dirname.indexOf('.git') > -1) {
-    return 'git';
-  } else if (__dirname.indexOf('.hg')) {
-    return 'hg'
-  }
-
-  return null;
 }
 
 function getFilesDiff() {
@@ -61,6 +54,21 @@ function getFilesDiff() {
   diffCmd = vcsType && diffCommandByVcsType[vcsType];
 
   return diffCmd ? execSync(diffCmd).toString() : '';
+}
+
+function getVcsType() {
+  // TODO: better way to determine type of repository
+  if(__dirname.indexOf('.git') > -1) {
+    return 'git';
+  } else if (__dirname.indexOf('.hg')) {
+    return 'hg';
+  }
+
+  return null;
+}
+
+function containPattern(pattern, content) {
+  return pattern.test(content);
 }
 
 function extractChangeFileName(fileRow) {
@@ -79,9 +87,11 @@ tests.forEach(function(testName) {
   files = getFilesContaining(patterns[testName]);
 
   if (files.length) {
+    /* eslint-disable no-console */
     console.error('You forgot to remove a ' + testName + ' in the following files:');
     console.error(files.join('\n'));
     console.error('');
+    /* eslint-enable no-console */
     process.exit(1);
   }
 });

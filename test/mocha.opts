@@ -2,3 +2,5 @@
 --ui bdd
 --bail
 --recursive
+--slow 1000
+--timeout 5000

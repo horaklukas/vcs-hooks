@@ -1,0 +1,12 @@
+{
+    "extends": "eslint:recommended",
+    "env": {
+        "node": true,
+        "mocha": true
+    },
+    "rules": {
+      "quotes": [2, "single"],
+      "semi": 2,
+      "space-before-function-paren": [2, "never"]
+    }
+}

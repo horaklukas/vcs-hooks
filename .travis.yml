@@ -1,7 +1,12 @@
 language: node_js
 node_js:
+  - "4"
+  - "5"
   - "6"
 before_script:
   - git config --global user.name "My fake name"
   - git config --global user.email "myfake@email.cz"
+script:
+  - npm test
+  - npm run lint
 sudo: false
