@@ -32,7 +32,7 @@ var copyFile = function (filePath, copyTo, callback, fileModificator) {
 
 // General utilities
 function generateRandomDirName (vcsName) {
-  var dir = vcsName + '_test' + new Date().getTime().toString() + Math.round((Math.random(100000) * 300)).toString();
+  var dir = vcsName + '_test' + new Date().getTime().toString() + Math.round((Math.random() * 300)).toString();
 
   return './test/' + dir;
 }
@@ -59,16 +59,16 @@ function copyFixtureIntoRepo (fixtureName, modificator, repoDir, callback) {
 var GitHelpers = {
   createTmpRepository: function(repoDir, callback) {
      // Create directory
-    fs.mkdir(repoDir, 0777, function() {
-      execAndAssertError('git --git-dir=' + repoDir + '/.git init', callback);
-    });
+    fs.mkdir(repoDir, 511, function () {
+	execAndAssertError('git --git-dir=' + repoDir + '/.git init', callback);
+});
   },
 
   copyHookIntoRepo: function(hookName, repoDir, callback) {
     var hooksDestPath = repoDir + '/.git/hooks';
 
     copyFile(hooksSrcPath + '/' + hookName, hooksDestPath, function() {
-      fs.chmod(hooksDestPath + '/' + hookName, 0777, callback);
+      fs.chmod(hooksDestPath + '/' + hookName, 511, callback);
     });
   },
 
@@ -93,9 +93,9 @@ function fixPathsForWinModificator(content) {
 var HgHelpers = {
   createTmpRepository: function(repoDir, callback) {
     // Create directory
-    fs.mkdir(repoDir, 0777, function() {
-      execAndAssertError('hg init ' + repoDir, callback);
-    });
+    fs.mkdir(repoDir, 511, function () {
+	execAndAssertError('hg init ' + repoDir, callback);
+});
   },
 
   copyHookIntoRepo: function(hookName, repoDir, type, callback) {
@@ -104,7 +104,7 @@ var HgHelpers = {
         hookPath;
 
     setUpHookPermissions = function() {
-      fs.chmod(hooksDestPath + '/' + hookName, 0777, callback);
+      fs.chmod(hooksDestPath + '/' + hookName, 511, callback);
     };
     hookPath = path.join(hooksSrcPath, hookName);
 

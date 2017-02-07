@@ -7,7 +7,6 @@
  inspired by https://gist.github.com/DerLobi/d938ac7dc422145f85e6
 */
 
-var fs = require('fs');
 var child_process = require('child_process');
 var execSync = child_process.execSync;
 var path = require('path');
@@ -15,7 +14,7 @@ var path = require('path');
 // looks like "+++ b/filename.js"
 var changedFilenameRegexp = /\s\+\+\+\s(.*)\s/;
 
-var diffFilesSeparator = /\sdiff \-\-git (.*)\s/
+var diffFilesSeparator = /\sdiff --git (.*)\s/;
 
 var patterns = {
   fdescribe: /\s\+\s*fdescribe\(/,
@@ -27,7 +26,7 @@ var tests = Object.keys(patterns);
 var diffCommandByVcsType = {
   'git': 'git diff --staged',
   'hg': 'hg diff --git'
-}
+};
 
 function getFilesContaining(pattern) {
   var files,
@@ -88,9 +87,11 @@ tests.forEach(function(testName) {
   files = getFilesContaining(patterns[testName]);
 
   if (files.length) {
+    /* eslint-disable no-console */
     console.error('You forgot to remove a ' + testName + ' in the following files:');
     console.error(files.join('\n'));
     console.error('');
+    /* eslint-enable no-console */
     process.exit(1);
   }
 });
