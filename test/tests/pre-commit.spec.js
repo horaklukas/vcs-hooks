@@ -210,7 +210,7 @@ describe('Pre commit hook', function() {
 
     afterEach(function(done) {
       h.destroyTmpRepository(hgRepoDir, function() {
-        done();;
+        done();
       });
     });
   });
