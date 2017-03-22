@@ -6,7 +6,7 @@ Version control system hooks that can help you when developing javascript projec
 
 ## Hooks
 
-### Pre commit###
+### Pre commit
 
 don't let you commit if any of commited files contain
 
