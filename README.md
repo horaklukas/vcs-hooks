@@ -30,14 +30,20 @@ yarn global add horaklukas/vcs-hooks
 Use `vcs-hooks` bin to instal files into repository, eg.
 
 ```
-vcs-hooks /srv/git/my-repo // or vcs-hooks C:/mercurial/my-repo
+vcs-hooks /srv/git/my-repo
+```
+
+or
+
+```
+ vcs-hooks C:/mercurial/my-repo
 ```
 
 Relative paths instead of absolute can be used as well.
 
 
 If from any reason is not possible, you can try [manual installation](/docs/manualInstall.md), 
-but use it as a last option if automatic install doesn't work.
+but use it as a last option in case automatic install does not work.
 
 ## Support
 
