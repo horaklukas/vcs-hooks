@@ -4,9 +4,9 @@ var ncp = require('ncp');
 var path = require('path');
 var exec = require('child_process').exec;
 var rimraf = require('rimraf');
+var helpers = require('../src/helpers');
 
 var hooksSrcPath = './src';
-var isWin = /^win/.test(process.platform);
 
 function execAndAssertError(command, successCallback) {
   exec(command, function(err) {
@@ -123,14 +123,14 @@ var HgHelpers = {
 
     copyFile(hookPath, hooksDestPath, function() {
       copyFile('./test/fixtures/hgrc', repoDir + '/.hg', function() {
-        if (isWin) {
+        if (helpers.isWin) {
           copyFile(hookPath + '.bat', hooksDestPath, function() {
             setUpHookPermissions();
           });
         } else {
           setUpHookPermissions();
         }
-      }, isWin && fixPathsForWinModificator);
+      }, helpers.isWin && fixPathsForWinModificator);
     });
   },
 
