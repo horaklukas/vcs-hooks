@@ -1,11 +1,11 @@
 {
   "name": "vcs-hooks",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "VCS hooks useful in javascript projects development",
   "scripts": {
     "test": "mocha test/tests/**/*.js",
     "test:watch": "mocha --watch test/tests/**/*.js",
-    "lint": "eslint src/pre-commit test/helpers.js test/tests/*.js"
+    "lint": "eslint src/pre-commit test/helpers.js test/tests/*.js bin/install.js"
   },
   "bin": {
     "vcs-hooks": "bin/install.js"
