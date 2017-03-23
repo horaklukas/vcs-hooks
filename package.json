@@ -8,7 +8,7 @@
     "lint": "eslint src/pre-commit test/helpers.js test/tests/*.js"
   },
   "bin": {
-    "vcs-hooks": "./src/install.js"
+    "vcs-hooks": "bin/install.js"
   },
   "repository": {
     "type": "git",

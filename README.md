@@ -15,38 +15,29 @@ don't let you commit if any of commited files contain
 
 ## Installation
 
-Clone this project then continue in depend of your repository type.
+Install package 
 
-### Git repository
+```
+npm install -g horaklukas/vcs-hooks 
+```
 
-it's simple, just copy hook file eg. `src/pre-commit` into `repository-dir/.git/hooks/` directory.
+or
 
-_For Linux, don't forget to make it executable_
+```
+yarn global add horaklukas/vcs-hooks
+```
 
-### Mercurial repository
+Use `vcs-hooks` bin to instal files into repository, eg.
 
-1. copy hook, eg. `src/pre-commit` into `repository-dir/.hg/` directory
-2. modify `repository-dir/.hg/hgrc` file (create one if it doesn't exist) and add
-definition of precommit hook under `[hooks]` section
+```
+vcs-hooks /srv/git/my-repo // or vcs-hooks C:/mercurial/my-repo
+```
 
-  if you have **Linux**
-  ```
-  [hooks]
-  precommit = ./.hg/pre-commit
-  ```
+Relative paths instead of absolute can be used as well.
 
-  or if you have **Windows**
-  ```
-  [hooks]
-  precommit = .hg\pre-commit
-  ```
 
-3. **For Windows** is required to copy also `src/pre-commit.bat` script into
-`repository-dir/.hg`
-
----------------------------------
-
-**Yippie-Kai-Yay hook works now!**
+If from any reason is not possible, you can try [manual installation](/docs/manualInstall.md), 
+but use it as a last option if automatic install doesn't work.
 
 ## Support
 

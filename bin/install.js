@@ -1,8 +1,10 @@
+#! /usr/bin/env node
+
 var path = require('path');
 var Promise = require('bluebird');
 var chalk = require('chalk');
 var argv = require('minimist')(process.argv.slice(2));
-var helpers = require('./helpers');
+var helpers = require('../src/helpers');
 var vcsDir = argv._[0];
 var VcsType = {
 	Git: 'git',
@@ -10,7 +12,7 @@ var VcsType = {
 };
 var hooks = ['pre-commit'];
 
-var HOOKS_SOURCE_DIR = __dirname;
+var HOOKS_SOURCE_DIR = path.resolve(__dirname, '../src');
 var HG_HOOKS_HEADER = '[hooks]';
 
 // promisify
